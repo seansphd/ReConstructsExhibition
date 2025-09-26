@@ -68,7 +68,7 @@ function restartGame() {
 }
 
 function openPopupWindow(file) {
-  window.open(file, '_blank', 'width=800,height=600');
+  window.open(file, '_blank', 'width=900,height=700');
 }
 
 function createMatrixRain() {

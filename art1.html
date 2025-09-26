@@ -25,9 +25,7 @@
             padding: 15px;
             border-radius: 4px;
         }
-        .canvas-container {
-            position: relative;
-        }
+        .canvas-container { position: relative; }
         #artCanvas {
             font-family: monospace;
             white-space: pre;
@@ -38,14 +36,8 @@
             width: 100%;
             resize: none;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
         select, input, button {
             width: 100%;
             padding: 8px;
@@ -53,20 +45,9 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        h1 { color: #333; text-align: center; margin-bottom: 30px; }
         .info {
             background: #e9ecef;
             padding: 10px;
@@ -74,6 +55,9 @@
             margin-top: 10px;
             font-size: 0.9em;
         }
+        /* optional: make the two buttons sit side by side */
+        .action-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .action-row button { width: auto; }
     </style>
 </head>
 <body>
@@ -114,10 +98,12 @@
         </div>
         <div class="canvas-container">
             <textarea id="artCanvas" readonly></textarea>
-            <div style="margin-top: 10px;">
+            <div class="action-row" style="margin-top: 10px;">
                 <button onclick="downloadAsImage()">Download as PNG</button>
-                <canvas id="downloadCanvas" style="display:none;"></canvas>
+                <!-- NEW: open museum text in popup -->
+                <button onclick="openMuseumText()" aria-label="Open museum text panel">Open museum text</button>
             </div>
+            <canvas id="downloadCanvas" style="display:none;"></canvas>
         </div>
     </div>
 
@@ -205,15 +191,34 @@
             ctx.fillRect(0, 0, width, height);
             ctx.fillStyle = '#000000';
             ctx.font = `${charHeight}px monospace`;
+            ctx.textBaseline = 'top';
 
             for (let i = 0; i < lines.length; i++) {
-                ctx.fillText(lines[i], 0, (i + 1) * charHeight);
+                ctx.fillText(lines[i], 0, i * charHeight);
             }
 
             const link = document.createElement('a');
             link.download = 'artwork.png';
             link.href = canvasElement.toDataURL('image/png');
             link.click();
+        }
+
+        // NEW: popup opener
+        function openMuseumText() {
+            const url = 'art1text.html'; // put this file next to this page
+          
+            const w = Math.min(900, window.screen.width - 100);
+            const h = Math.min(700, window.screen.height - 100);
+            const left = Math.max(0, Math.round((window.screen.width - w) / 2));
+            const top = Math.max(0, Math.round((window.screen.height - h) / 2));
+            const features = `popup=yes,scrollbars=yes,resizable=yes,width=${w},height=${h},left=${left},top=${top}`;
+            const win = window.open(url, 'ART1TextPanel', features);
+            if (!win) {
+                // fallback if blocked
+                window.open(url, '_blank');
+            } else {
+                win.focus();
+            }
         }
 
         // Initialise canvas

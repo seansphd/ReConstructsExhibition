@@ -22,7 +22,7 @@
             background: rgba(0, 0, 0, 0.7);
             padding: 15px;
             border-radius: 8px;
-            color: white;
+            color: white; /* fixed */
             z-index: 10;
         }
 
@@ -36,13 +36,19 @@
             width: 120px;
         }
 
+        .controls .action-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         .controls button {
             margin-top: 10px;
             padding: 8px 12px;
             background: #007bff;
             border: none;
             border-radius: 4px;
-            colour: white;
+            color: white; /* fixed */
             cursor: pointer;
         }
 
@@ -54,7 +60,7 @@
             position: fixed;
             bottom: 20px;
             left: 20px;
-            colour: white;
+            color: white; /* fixed */
             background: rgba(0, 0, 0, 0.7);
             padding: 15px;
             border-radius: 8px;
@@ -79,12 +85,15 @@
             Light Intensity:
             <input type="range" id="lightRange" min="0" max="100" value="70">
         </label>
-        <button onclick="downloadImage()">Download as PNG</button>
+        <div class="action-row">
+            <button onclick="downloadImage()">Download as PNG</button>
+            <button onclick="openMuseumText()" aria-label="Open museum text panel">Open museum text</button>
+        </div>
     </div>
 
     <div class="info">
         <h3>Field Work 3: A Structured Arena</h3>
-        <p>An interactive visualization of Timothy Drever's conceptual work featuring a wave-structured surface.</p>
+        <p>An interactive visualisation of Timothy Drever’s conceptual work featuring a wave-structured surface.</p>
         <p>• Move mouse to change perspective</p>
         <p>• Use sliders to adjust wave height, speed, and lighting</p>
     </div>
@@ -181,7 +190,21 @@
             link.click();
         }
 
+        // popup opener
+        function openMuseumText() {
+            const url = 'fieldworktext.html'; // place this file beside the current page
+            const w = Math.min(900, window.screen.width - 100);
+            const h = Math.min(700, window.screen.height - 100);
+            const left = Math.max(0, Math.round((window.screen.width - w) / 2));
+            const top = Math.max(0, Math.round((window.screen.height - h) / 2));
+            const features = `popup=yes,scrollbars=yes,resizable=yes,width=${w},height=${h},left=${left},top=${top}`;
+            const win = window.open(url, 'FieldWork3TextPanel', features);
+            if (!win) window.open(url, '_blank');
+            else win.focus();
+        }
+
         draw();
     </script>
 </body>
 </html>
+

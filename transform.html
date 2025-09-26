@@ -44,9 +44,15 @@
             margin-bottom: 15px;
         }
 
+        .action-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         button {
             padding: 8px 16px;
-            margin: 5px;
+            margin: 5px 0;
             background: #007bff;
             color: white;
             border: none;
@@ -101,10 +107,15 @@
                 <span id="frameCount">20</span>
             </div>
 
-            <div class="control-group">
+            <div class="control-group action-row">
                 <button id="transform">Transform</button>
                 <button id="animate">Animate</button>
                 <button id="stop">Stop</button>
+            </div>
+
+            <div class="control-group action-row">
+                <button id="downloadResult">Download result as PNG</button>
+                <button onclick="openMuseumText()" aria-label="Open museum text">Open museum text</button>
             </div>
 
             <div class="status" id="status">
@@ -235,6 +246,8 @@
                         this.redrawCanvas(this.sourceCtx, this.sourceShape);
                     }
                 };
+
+                document.getElementById('downloadResult').onclick = () => this.downloadResultPNG();
             }
 
             redrawCanvas(ctx, shape) {
@@ -369,7 +382,7 @@
 
                 this.stopAnimation();
 
-                const frameRate = 10; // frames per second
+                const frameRate = 10;
                 const interval = 1000 / frameRate;
 
                 const animate = () => {
@@ -387,6 +400,26 @@
                     this.animationId = null;
                 }
             }
+
+            downloadResultPNG() {
+                const link = document.createElement('a');
+                link.download = 'vector-result.png';
+                link.href = this.resultCanvas.toDataURL('image/png');
+                link.click();
+            }
+        }
+
+        // popup opener for museum text
+        function openMuseumText() {
+            const url = 'transform_text.html'; // place this beside the current file
+            const w = Math.min(900, window.screen.width - 100);
+            const h = Math.min(700, window.screen.height - 100);
+            const left = Math.max(0, Math.round((window.screen.width - w) / 2));
+            const top = Math.max(0, Math.round((window.screen.height - h) / 2));
+            const features = `popup=yes,scrollbars=yes,resizable=yes,width=${w},height=${h},left=${left},top=${top}`;
+            const win = window.open(url, 'VectorTextPanel', features);
+            if (!win) window.open(url, '_blank');
+            else win.focus();
         }
 
         window.onload = () => {

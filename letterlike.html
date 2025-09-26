@@ -30,18 +30,24 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             text-align: center;
         }
-        button {
-            padding: 10px 20px;
-            background: #4CAF50;
-            colour: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
+        .controls .action-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-        button:hover {
-            background: #45a049;
-        }
+    button {
+    padding: 10px 20px;
+    background: #2196f3; /* blue */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 5px 0;
+}
+button:hover {
+    background: #1976d2; /* darker blue on hover */
+}
         .debug {
             margin-top: 10px;
             padding: 10px;
@@ -55,9 +61,11 @@
     <h1>Letter-Like Shapes Generator</h1>
     
     <div class="controls">
-        <button onclick="generateNewShape()">Generate New Shape</button>
-        <button onclick="debug()">Debug Info</button>
-        <button onclick="downloadCanvas()">Download as PNG</button>
+        <div class="action-row">
+            <button onclick="generateNewShape()">Generate New Shape</button>
+            <button onclick="downloadCanvas()">Download as PNG</button>
+            <button onclick="openMuseumText()" aria-label="Open museum text panel">Open museum text</button>
+        </div>
     </div>
 
     <div class="canvas-container">
@@ -204,6 +212,19 @@
             link.download = 'letter-like-shape.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
+        }
+
+        // new: open museum text popup
+        function openMuseumText() {
+            const url = 'letterliketext.html'; // place in same folder
+            const w = Math.min(900, window.screen.width - 100);
+            const h = Math.min(700, window.screen.height - 100);
+            const left = Math.max(0, Math.round((window.screen.width - w) / 2));
+            const top = Math.max(0, Math.round((window.screen.height - h) / 2));
+            const features = `popup=yes,scrollbars=yes,resizable=yes,width=${w},height=${h},left=${left},top=${top}`;
+            const win = window.open(url, 'LetterShapesTextPanel', features);
+            if (!win) window.open(url, '_blank');
+            else win.focus();
         }
 
         generateNewShape();

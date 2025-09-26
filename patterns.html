@@ -35,18 +35,8 @@
             grid-template-rows: repeat(2, 1fr);
         }
 
-        .cell {
-            background: white;
-        }
-
-        .cell.filled {
-            background: black;
-        }
-
-        button {
-            padding: 8px 16px;
-            cursor: pointer;
-        }
+        .cell { background: white; }
+        .cell.filled { background: black; }
 
         .patterns {
             display: flex;
@@ -60,6 +50,30 @@
             align-items: center;
             gap: 10px;
         }
+
+        /* Put button rules LAST so they override anything earlier */
+        .controls button {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: #2196f3;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            line-height: 1.2;
+            font: inherit;
+        }
+
+        .controls button:hover {
+            background-color: #1976d2;
+        }
+
+        .controls button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +85,7 @@
         <button onclick="generateRandomPattern()">Generate Random Pattern</button>
         <button onclick="generateBlockPattern()">Generate Block Pattern</button>
         <button onclick="downloadPatternAsPNG()">Download as PNG</button>
+        <button onclick="openMuseumText()">Open museum text</button>
     </div>
 
     <div class="patterns">
@@ -128,12 +143,10 @@
         grid.innerHTML = '';
         const size = 16;
         grid.style.gridTemplateColumns = `repeat(${size}, 20px)`;
-
         for (let i = 0; i < size; i++) {
             for (let j = 0; j < size; j++) {
                 const moduleIndex = (i + j) % 4;
-                const selectedModule = moduleDefinitions[moduleIndex];
-                grid.appendChild(createModule(selectedModule));
+                grid.appendChild(createModule(moduleDefinitions[moduleIndex]));
             }
         }
     }
@@ -143,7 +156,6 @@
         grid.innerHTML = '';
         const size = 16;
         grid.style.gridTemplateColumns = `repeat(${size}, 20px)`;
-
         for (let i = 0; i < size * size; i++) {
             const randomIndex = Math.floor(Math.random() * moduleDefinitions.length);
             grid.appendChild(createModule(moduleDefinitions[randomIndex]));
@@ -157,7 +169,6 @@
         const blockSize = 2;
         grid.style.gridTemplateColumns = `repeat(${gridSize}, 20px)`;
         const pattern = [0, 1, 2, 3];
-
         for (let i = 0; i < gridSize; i += blockSize) {
             for (let j = 0; j < gridSize; j += blockSize) {
                 const shuffledPattern = shuffleArray([...pattern]);
@@ -202,6 +213,18 @@
         link.download = 'struycken-pattern.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
+    }
+
+    function openMuseumText() {
+        const url = 'patternstext.html';
+        const w = Math.min(900, window.screen.width - 100);
+        const h = Math.min(700, window.screen.height - 100);
+        const left = Math.max(0, Math.round((window.screen.width - w) / 2));
+        const top = Math.max(0, Math.round((window.screen.height - h) / 2));
+        const features = `popup=yes,scrollbars=yes,resizable=yes,width=${w},height=${h},left=${left},top=${top}`;
+        const win = window.open(url, 'StruyckenTextPanel', features);
+        if (!win) window.open(url, '_blank');
+        else win.focus();
     }
 
     renderBaseModules();

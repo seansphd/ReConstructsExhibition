@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Barbadillo's Modular Art System</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: Arial, sans-serif;
@@ -30,6 +26,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
+    /* Grid 15% larger than previous 266px */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -37,6 +34,8 @@
       background: #333;
       padding: 2px;
       border-radius: 4px;
+      width: min(306px, 90vw);
+      margin-inline: auto;
     }
 
     .cell {
@@ -64,13 +63,9 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background: #1976d2;
-    }
+    button:hover { background: #1976d2; }
 
-    .module-selector {
-      margin: 10px 0;
-    }
+    .module-selector { margin: 10px 0; }
   </style>
 </head>
 <body>
@@ -88,6 +83,7 @@
       <button onclick="invertColors()">Invert Colors</button>
       <button onclick="clearGrid()">Clear Grid</button>
       <button onclick="downloadGridAsPNG()">Download as PNG</button>
+      <button onclick="openMuseumText()">Open museum text</button>
     </div>
 
     <div class="grid-container" id="grid"></div>
@@ -180,7 +176,7 @@
 
     async function downloadGridAsPNG() {
       const cells = Array.from(document.querySelectorAll('.cell'));
-      const size = 400;
+      const size = 306; // 15% larger than 266px
       const cellSize = size / 4;
       const canvas = document.createElement('canvas');
       canvas.width = size;
@@ -228,6 +224,18 @@
       link.download = 'modular-art.png';
       link.href = canvas.toDataURL('image/png');
       link.click();
+    }
+
+    function openMuseumText() {
+      const url = 'modulestext.html';
+      const w = Math.min(700, window.screen.width - 100);
+      const h = Math.min(500, window.screen.height - 100);
+      const left = Math.max(0, Math.round((window.screen.width - w) / 2));
+      const top = Math.max(0, Math.round((window.screen.height - h) / 2));
+      const features = `popup=yes,scrollbars=yes,resizable=yes,width=${w},height=${h},left=${left},top=${top}`;
+      const win = window.open(url, 'BarbadilloTextPanel', features);
+      if (!win) window.open(url, '_blank');
+      else win.focus();
     }
 
     createGrid();
