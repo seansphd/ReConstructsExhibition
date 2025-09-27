@@ -13,18 +13,21 @@ const passages = {
     ]
   },
 
-  merge: {
-    sections: [
-      "INTERPRETIVE SYSTEM ACTIVE...Click to Load"
-    ],
-    choices: [
-      { text: "ART1 – Grid-based ASCII Design Tool", action: "popup", popupWindow: "art1.html" },
-      { text: "Modules – Modular Grid System", action: "popup", popupWindow: "modules.html" },
-      { text: "Field Work – Wave-based Participation", action: "popup", popupWindow: "fieldwork.html" },
-      { text: "Transformation – Interpolated Line Morphing", action: "popup", popupWindow: "transform.html" },
-      { text: "Letter-like Shapes – Algorithmic Typographic Forms", action: "popup", popupWindow: "letterlike.html" },
-      { text: "Patterns – Modular Grid with Controlled Randomness", action: "popup", popupWindow: "patterns.html" },
-      { text: "TRPL – Moiré Plotter Generator", action: "popup", popupWindow: "trpl.html" }
-    ]
-  }
+merge: {
+  sections: [
+    "INTERPRETIVE SYSTEM ACTIVE...Click to Load"
+  ],
+  choices: [
+    { text: "ART1 – Grid-based ASCII Design Tool", action: "popup", popupWindow: "art1.html" },
+    { text: "Modules – Modular Grid System", action: "popup", popupWindow: "modules.html" },
+    { text: "Field Work – Wave-based Participation", action: "popup", popupWindow: "fieldwork.html" },
+    { text: "Transformation – Interpolated Line Morphing", action: "popup", popupWindow: "transform.html" },
+    { text: "Letter-like Shapes – Algorithmic Typographic Forms", action: "popup", popupWindow: "letterlike.html" },
+    { text: "Patterns – Modular Grid with Controlled Randomness", action: "popup", popupWindow: "patterns.html" },
+    { text: "TRPL – Moiré Plotter Generator", action: "popup", popupWindow: "trpl.html" },
+    // NEW CHOICE
+    { text: "Explore the Research Site", action: "external", url: "https://seansphd.github.io/REConstructs/" }
+  ]
+}
+
 };
