@@ -37,6 +37,8 @@ function displayChoices(choices) {
         gameState.currentPassage = 'merge'; // stay on merge after popup
         sectionIndex = 0;
         continueStory();
+      } else if (choice.action === 'external' && choice.url) {
+        window.open(choice.url, '_blank');
       } else {
         gameState.currentPassage = choice.action;
         sectionIndex = 0;
@@ -95,4 +97,5 @@ function createMatrixRain() {
 }
 
 createMatrixRain();
+
 
