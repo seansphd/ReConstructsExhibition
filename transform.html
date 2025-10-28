@@ -2,94 +2,192 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Vector Transformation Program</title>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 0;
+            padding: 10px;
             background: #f0f0f0;
+            touch-action: manipulation;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 10px 0 20px 0;
+            font-size: 1.3em;
         }
 
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .canvas-container {
             display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .canvas-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .canvas-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9em;
         }
 
         canvas {
             background: white;
-            border: 1px solid #ccc;
+            border: 2px solid #007bff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            touch-action: none;
+            cursor: crosshair;
+            max-width: 100%;
+            height: auto;
         }
 
         .controls {
             background: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 600px;
         }
 
         .control-group {
             margin-bottom: 15px;
         }
 
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
         .action-row {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         button {
-            padding: 8px 16px;
-            margin: 5px 0;
+            padding: 12px 16px;
+            margin: 0;
             background: #007bff;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 15px;
+            flex: 1;
+            min-width: 100px;
+            font-weight: bold;
         }
 
         button:hover {
             background: #0056b3;
         }
 
-        select {
-            padding: 8px;
-            margin: 5px;
+        button:active {
+            transform: scale(0.98);
+        }
+
+        select, input[type="range"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        input[type="range"] {
+            padding: 5px;
+        }
+
+        .frame-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #frameCount {
+            font-weight: bold;
+            font-size: 1.1em;
+            min-width: 30px;
         }
 
         .status {
             margin-top: 10px;
-            font-style: italic;
-            color: #666;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 4px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .canvas-container {
+                flex-direction: row;
+                gap: 20px;
+            }
+
+            .canvas-wrapper {
+                flex: 1;
+            }
+
+            canvas {
+                width: 400px;
+                height: 400px;
+            }
+
+            .action-row button {
+                flex: 0 1 auto;
+            }
+        }
+
+        @media (max-width: 767px) {
+            canvas {
+                width: 100%;
+                aspect-ratio: 1;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Vector Transformation Program</h1>
-
-        <div class="canvas-container">
-            <canvas id="sourceCanvas" width="400" height="400"></canvas>
-            <canvas id="resultCanvas" width="400" height="400"></canvas>
-        </div>
+        <h1>Vector Transformation</h1>
 
         <div class="controls">
-            <div class="control-group">
+            <div class="control-group action-row">
                 <button id="clearSource">Clear Source</button>
                 <button id="clearTarget">Clear Target</button>
-                <button id="undo">Undo Last Point</button>
+                <button id="undo">Undo</button>
             </div>
 
             <div class="control-group">
@@ -102,9 +200,11 @@
             </div>
 
             <div class="control-group">
-                <label>Number of Intermediate Frames:</label>
-                <input type="range" id="frames" min="1" max="50" value="20">
-                <span id="frameCount">20</span>
+                <label>Intermediate Frames:</label>
+                <div class="frame-display">
+                    <input type="range" id="frames" min="1" max="50" value="20">
+                    <span id="frameCount">20</span>
+                </div>
             </div>
 
             <div class="control-group action-row">
@@ -114,12 +214,23 @@
             </div>
 
             <div class="control-group action-row">
-                <button id="downloadResult">Download result as PNG</button>
-                <button onclick="openMuseumText()" aria-label="Open museum text">Open museum text</button>
+                <button id="downloadResult">Download PNG</button>
+                <button onclick="openMuseumText()">Museum Text</button>
             </div>
 
             <div class="status" id="status">
-                Draw shapes on both canvases, then click Transform
+                Tap on both canvases to draw shapes, then tap Transform
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <div class="canvas-wrapper">
+                <div class="canvas-label">Source Shape</div>
+                <canvas id="sourceCanvas" width="400" height="400"></canvas>
+            </div>
+            <div class="canvas-wrapper">
+                <div class="canvas-label">Result Shape</div>
+                <canvas id="resultCanvas" width="400" height="400"></canvas>
             </div>
         </div>
     </div>
@@ -162,9 +273,11 @@
                 }
             }
 
-            draw(ctx) {
+            draw(ctx, scale = 1) {
                 if (this.points.length === 0) return;
 
+                ctx.lineWidth = 2 / scale;
+                ctx.strokeStyle = '#000';
                 ctx.beginPath();
                 ctx.moveTo(this.points[0].x, this.points[0].y);
 
@@ -176,7 +289,7 @@
 
                 this.points.forEach((point, index) => {
                     ctx.beginPath();
-                    ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
+                    ctx.arc(point.x, point.y, 4 / scale, 0, Math.PI * 2);
                     ctx.fillStyle = index === 0 ? 'green' : 'red';
                     ctx.fill();
                 });
@@ -201,22 +314,63 @@
                 this.sourceCtx = this.sourceCanvas.getContext('2d');
                 this.resultCtx = this.resultCanvas.getContext('2d');
 
-                const addPoint = (canvas, event) => {
+                const getCoordinates = (canvas, event) => {
                     const rect = canvas.getBoundingClientRect();
-                    const x = event.clientX - rect.left;
-                    const y = event.clientY - rect.top;
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    
+                    let clientX, clientY;
+                    
+                    if (event.touches && event.touches.length > 0) {
+                        clientX = event.touches[0].clientX;
+                        clientY = event.touches[0].clientY;
+                    } else {
+                        clientX = event.clientX;
+                        clientY = event.clientY;
+                    }
+                    
+                    const x = (clientX - rect.left) * scaleX;
+                    const y = (clientY - rect.top) * scaleY;
+                    
+                    return { x, y };
+                };
+
+                const addPoint = (canvas, event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    const { x, y } = getCoordinates(canvas, event);
+
+                    console.log('Adding point:', x, y, 'to', canvas === this.sourceCanvas ? 'source' : 'result');
 
                     if (canvas === this.sourceCanvas) {
                         this.sourceShape.addPoint(x, y);
                         this.redrawCanvas(this.sourceCtx, this.sourceShape);
+                        this.updateStatus(`Source: ${this.sourceShape.points.length} points`);
                     } else {
                         this.targetShape.addPoint(x, y);
                         this.redrawCanvas(this.resultCtx, this.targetShape);
+                        this.updateStatus(`Target: ${this.targetShape.points.length} points`);
                     }
                 };
 
                 [this.sourceCanvas, this.resultCanvas].forEach(canvas => {
-                    canvas.addEventListener('click', (e) => addPoint(canvas, e));
+                    // Mouse events
+                    canvas.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        addPoint(canvas, e);
+                    });
+                    
+                    // Touch events
+                    canvas.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        addPoint(canvas, e);
+                    }, { passive: false });
+                    
+                    // Prevent context menu
+                    canvas.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                    });
                 });
             }
 
@@ -224,11 +378,13 @@
                 document.getElementById('clearSource').onclick = () => {
                     this.sourceShape = new Shape();
                     this.redrawCanvas(this.sourceCtx, this.sourceShape);
+                    this.updateStatus('Source cleared');
                 };
 
                 document.getElementById('clearTarget').onclick = () => {
                     this.targetShape = new Shape();
                     this.redrawCanvas(this.resultCtx, this.targetShape);
+                    this.updateStatus('Target cleared');
                 };
 
                 document.getElementById('transform').onclick = () => this.transform();
@@ -240,7 +396,11 @@
                 };
 
                 document.getElementById('undo').onclick = () => {
-                    if (this.sourceShape.points.length > 0) {
+                    if (this.targetShape.points.length > 0) {
+                        this.targetShape.points.pop();
+                        this.targetShape.updateVectors();
+                        this.redrawCanvas(this.resultCtx, this.targetShape);
+                    } else if (this.sourceShape.points.length > 0) {
                         this.sourceShape.points.pop();
                         this.sourceShape.updateVectors();
                         this.redrawCanvas(this.sourceCtx, this.sourceShape);
@@ -250,8 +410,13 @@
                 document.getElementById('downloadResult').onclick = () => this.downloadResultPNG();
             }
 
+            updateStatus(message) {
+                document.getElementById('status').textContent = message;
+            }
+
             redrawCanvas(ctx, shape) {
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                const canvas = ctx.canvas;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 shape.draw(ctx);
             }
 
@@ -260,7 +425,7 @@
                 const frameCount = parseInt(document.getElementById('frames').value);
 
                 if (this.sourceShape.points.length < 2 || this.targetShape.points.length < 2) {
-                    document.getElementById('status').textContent = 'Both shapes need at least 2 points';
+                    this.updateStatus('Both shapes need at least 2 points');
                     return;
                 }
 
@@ -293,6 +458,7 @@
 
                 this.currentFrame = 0;
                 this.drawFrame(this.currentFrame);
+                this.updateStatus(`Transformation complete: ${this.frames.length} frames`);
             }
 
             mapperMethod(sourcePoints, targetPoints, t) {
@@ -391,6 +557,7 @@
                     this.animationId = setTimeout(animate, interval);
                 };
 
+                this.updateStatus('Animation playing...');
                 this.animationId = setTimeout(animate, interval);
             }
 
@@ -398,6 +565,7 @@
                 if (this.animationId !== null) {
                     clearTimeout(this.animationId);
                     this.animationId = null;
+                    this.updateStatus('Animation stopped');
                 }
             }
 
@@ -409,9 +577,8 @@
             }
         }
 
-        // popup opener for museum text
         function openMuseumText() {
-            const url = 'transform_text.html'; // place this beside the current file
+            const url = 'transform_text.html';
             const w = Math.min(900, window.screen.width - 100);
             const h = Math.min(700, window.screen.height - 100);
             const left = Math.max(0, Math.round((window.screen.width - w) / 2));
